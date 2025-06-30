@@ -47,9 +47,10 @@ def train_model(model, train_loader, device, perm=None, n_epoch=1):
 
             if data_flattened.shape[1] != perm.shape[0]:
                 raise ValueError(
-                    f"La dimension des données aplaties ({data_flattened.shape[1]}) "
-                    f"ne correspond pas à la taille de la permutation ({perm.shape[0]}). "
-                    f"Assurez-vous que l'image est bien 28x28 ou ajustez 'perm'."
+                    f"La dimension des données aplaties "
+                    f"({data_flattened.shape[1]}) ne correspond pas à la taille "
+                    f"de la permutation ({perm.shape[0]}). Assurez-vous que "
+                    f"l'image est bien 28x28 ou ajustez 'perm'."
                 )
 
             data_permuted = data_flattened[:, perm]
@@ -65,7 +66,9 @@ def train_model(model, train_loader, device, perm=None, n_epoch=1):
 
             if batch_idx % 100 == 0:
                 print(
-                    f"  Epoch: {epoch+1}/{n_epoch} | Batch (Step): {batch_idx}/{len(train_loader)} | Loss: {loss.item():.4f}"
+                    f"  Epoch: {epoch+1}/{n_epoch} | "
+                    f"Batch (Step): {batch_idx}/{len(train_loader)} | "
+                    f"Loss: {loss.item():.4f}"
                 )
 
         print(f"--- Fin de l'Epoch {epoch+1} ---")
@@ -90,9 +93,10 @@ def test_model(model, test_loader, device, perm=None):
 
             if data_flattened.shape[1] != perm.shape[0]:
                 raise ValueError(
-                    f"La dimension des données aplaties ({data_flattened.shape[1]}) "
-                    f"ne correspond pas à la taille de la permutation ({perm.shape[0]}). "
-                    f"Assurez-vous que l'image est bien 28x28 ou ajustez 'perm'."
+                    f"La dimension des données aplaties "
+                    f"({data_flattened.shape[1]}) ne correspond pas à la taille "
+                    f"de la permutation ({perm.shape[0]}). Assurez-vous que "
+                    f"l'image est bien 28x28 ou ajustez 'perm'."
                 )
 
             data_permuted = data_flattened[:, perm]
@@ -107,7 +111,9 @@ def test_model(model, test_loader, device, perm=None):
         test_loss /= len(test_loader.dataset)
         accuracy = 100.0 * correct / len(test_loader.dataset)
         print(
-            f"\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} ({accuracy:.2f}%)\n"
+            f"\nTest set: Average loss: {test_loss:.4f}, "
+            f"Accuracy: {correct}/{len(test_loader.dataset)} "
+            f"({accuracy:.2f}%)\n"
         )
         return test_loss, accuracy
 

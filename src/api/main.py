@@ -3,15 +3,14 @@ import numpy as np
 import torch
 from PIL import Image
 import io
-import sys
 import os
 import multiprocessing
 
-# Désactiver le multiprocessing
-multiprocessing.set_start_method("spawn", force=True)
-
 # Import du modèle
 from ..models.convnet import ConvNet
+
+# Désactiver le multiprocessing
+multiprocessing.set_start_method("spawn", force=True)
 
 app = FastAPI()
 

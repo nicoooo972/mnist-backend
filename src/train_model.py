@@ -34,7 +34,8 @@ def train_model(model, train_loader, device, perm, n_epoch=10):
 
             if batch_idx % 100 == 0:
                 print(
-                    f"  Batch: {batch_idx}/{len(train_loader)} | Loss: {loss.item():.4f}"
+                    f"  Batch: {batch_idx}/{len(train_loader)} | "
+                    f"Loss: {loss.item():.4f}"
                 )
 
 
@@ -61,7 +62,9 @@ def test_model(model, test_loader, device, perm):
         test_loss /= len(test_loader.dataset)
         accuracy = 100.0 * correct / len(test_loader.dataset)
         print(
-            f"Test: Loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} ({accuracy:.2f}%)"
+            f"Test: Loss: {test_loss:.4f}, "
+            f"Accuracy: {correct}/{len(test_loader.dataset)} "
+            f"({accuracy:.2f}%)"
         )
         return test_loss, accuracy
 
