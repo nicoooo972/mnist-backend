@@ -20,7 +20,7 @@ class ConvNet(nn.Module):
             nn.ReLU(),
             nn.Linear(in_features=50, out_features=output_size)
         )
-        
+
     def forward(self, x):
         return self.net(x)
 
@@ -42,12 +42,14 @@ def train_model(model, train_loader, device, perm=None, n_epoch=1):
 
             batch_size = data.shape[0]
             data_flattened = data.view(batch_size, -1)
-        
+
             if data_flattened.shape[1] != perm.shape[0]:
-                raise ValueError(f"La dimension des données aplaties ({data_flattened.shape[1]}) "
-                                f"ne correspond pas à la taille de la permutation ({perm.shape[0]}). "
-                                f"Assurez-vous que l'image est bien 28x28 ou ajustez 'perm'.")
-        
+                raise ValueError(
+                    f"La dimension des données aplaties ({data_flattened.shape[1]}) "
+                    f"ne correspond pas à la taille de la permutation ({perm.shape[0]}). "
+                    f"Assurez-vous que l'image est bien 28x28 ou ajustez 'perm'."
+                )
+
             data_permuted = data_flattened[:, perm]
             data_reshaped = data_permuted.view(batch_size, 1, 28, 28)
             
@@ -60,7 +62,9 @@ def train_model(model, train_loader, device, perm=None, n_epoch=1):
             optimizer.step()
 
             if batch_idx % 100 == 0:
-                print(f"  Epoch: {epoch+1}/{n_epoch} | Batch (Step): {batch_idx}/{len(train_loader)} | Loss: {loss.item():.4f}")
+                print(
+                    f"  Epoch: {epoch+1}/{n_epoch} | Batch (Step): {batch_idx}/{len(train_loader)} | Loss: {loss.item():.4f}"
+                )
 
         print(f"--- Fin de l'Epoch {epoch+1} ---")
 
@@ -80,12 +84,14 @@ def test_model(model, test_loader, device, perm=None):
             data, target = data.to(device), target.to(device)
             batch_size = data.shape[0]
             data_flattened = data.view(batch_size, -1)
-        
+
             if data_flattened.shape[1] != perm.shape[0]:
-                raise ValueError(f"La dimension des données aplaties ({data_flattened.shape[1]}) "
-                                f"ne correspond pas à la taille de la permutation ({perm.shape[0]}). "
-                                f"Assurez-vous que l'image est bien 28x28 ou ajustez 'perm'.")
-            
+                raise ValueError(
+                    f"La dimension des données aplaties ({data_flattened.shape[1]}) "
+                    f"ne correspond pas à la taille de la permutation ({perm.shape[0]}). "
+                    f"Assurez-vous que l'image est bien 28x28 ou ajustez 'perm'."
+                )
+
             data_permuted = data_flattened[:, perm]
             data_reshaped = data_permuted.view(batch_size, 1, 28, 28)
             
@@ -96,8 +102,10 @@ def test_model(model, test_loader, device, perm=None):
             correct += pred.eq(target.view_as(pred)).sum().item()
         
         test_loss /= len(test_loader.dataset)
-        accuracy = 100. * correct / len(test_loader.dataset)
-        print(f'\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} ({accuracy:.2f}%)\n')
+        accuracy = 100.0 * correct / len(test_loader.dataset)
+        print(
+            f"\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} ({accuracy:.2f}%)\n"
+        )
         return test_loss, accuracy
 
 def main():

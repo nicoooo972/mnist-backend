@@ -97,12 +97,14 @@ def predict(image_tensor: torch.Tensor, model: torch.nn.Module) -> dict:
 
 @app.get("/")
 async def root():
-    return {"message": "API de classification MNIST", 
-            "endpoints": {
-                "predict": "/api/v1/predict",
-                "docs": "/docs",
-                "redoc": "/redoc"
-            }}
+    return {
+        "message": "API de classification MNIST",
+        "endpoints": {
+            "predict": "/api/v1/predict",
+            "docs": "/docs",
+            "redoc": "/redoc",
+        },
+    }
 
 @app.post("/api/v1/predict")
 async def predict_endpoint(file: UploadFile = File(...)):
@@ -121,6 +123,7 @@ async def predict_endpoint(file: UploadFile = File(...)):
 async def health():
     return {"status": "healthy", "service": "mnist-backend"}
 
-@app.get("/api/info")  
+
+@app.get("/api/info")
 async def info():
     return {"version": "1.0.0", "model": "ConvNet"}

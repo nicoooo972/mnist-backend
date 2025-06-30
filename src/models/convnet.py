@@ -16,6 +16,6 @@ class ConvNet(nn.Module):
             nn.ReLU(),
             nn.Linear(in_features=50, out_features=output_size)
         )
-        
+
     def forward(self, x):
-        return self.net(x) 
+        return self.net(x)

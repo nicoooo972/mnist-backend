@@ -114,4 +114,4 @@ def main():
     print("✅ Modèle sauvegardé avec succès dans models/convnet.pt")
 
 if __name__ == "__main__":
-    main() 
+    main()
