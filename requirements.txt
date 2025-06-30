@@ -1,0 +1,26 @@
+# === MNIST Classifier - Production Requirements ===
+
+# FastAPI Backend
+fastapi
+uvicorn[standard]
+python-multipart
+
+# Streamlit Frontend
+streamlit
+streamlit-drawable-canvas
+
+# Machine Learning
+torch
+torchvision
+
+# Image Processing
+pillow
+numpy
+
+# HTTP Communication
+requests
+
+# === Development Only (comment out for production) ===
+# ipython>=8.10
+# jupyterlab>=3.0
+# notebook
