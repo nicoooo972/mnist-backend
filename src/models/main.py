@@ -4,6 +4,7 @@ import torch.nn.functional as F
 from torchvision import datasets, transforms
 import os
 
+
 # Définition du modèle ConvNet
 class ConvNet(nn.Module):
     def __init__(self, input_size, n_kernels, output_size):
@@ -18,11 +19,12 @@ class ConvNet(nn.Module):
             nn.Flatten(),
             nn.Linear(in_features=n_kernels * 4 * 4, out_features=50),
             nn.ReLU(),
-            nn.Linear(in_features=50, out_features=output_size)
+            nn.Linear(in_features=50, out_features=output_size),
         )
 
     def forward(self, x):
         return self.net(x)
+
 
 # Fonction d'entraînement
 def train_model(model, train_loader, device, perm=None, n_epoch=1):
@@ -52,10 +54,10 @@ def train_model(model, train_loader, device, perm=None, n_epoch=1):
 
             data_permuted = data_flattened[:, perm]
             data_reshaped = data_permuted.view(batch_size, 1, 28, 28)
-            
+
             optimizer.zero_grad()
             logits = model(data_reshaped)
-            
+
             loss = F.cross_entropy(logits, target)
 
             loss.backward()
@@ -67,6 +69,7 @@ def train_model(model, train_loader, device, perm=None, n_epoch=1):
                 )
 
         print(f"--- Fin de l'Epoch {epoch+1} ---")
+
 
 # Fonction de test
 def test_model(model, test_loader, device, perm=None):
@@ -94,19 +97,20 @@ def test_model(model, test_loader, device, perm=None):
 
             data_permuted = data_flattened[:, perm]
             data_reshaped = data_permuted.view(batch_size, 1, 28, 28)
-            
+
             logits = model(data_reshaped)
-            test_loss += F.cross_entropy(logits, target, reduction='sum').item()
-        
+            test_loss += F.cross_entropy(logits, target, reduction="sum").item()
+
             pred = torch.argmax(logits, dim=1)
             correct += pred.eq(target.view_as(pred)).sum().item()
-        
+
         test_loss /= len(test_loader.dataset)
         accuracy = 100.0 * correct / len(test_loader.dataset)
         print(
             f"\nTest set: Average loss: {test_loss:.4f}, Accuracy: {correct}/{len(test_loader.dataset)} ({accuracy:.2f}%)\n"
         )
         return test_loss, accuracy
+
 
 def main():
     # Configuration du device
@@ -118,19 +122,20 @@ def main():
         device = torch.device("cpu")
 
     # Chargement des données
-    tf = transforms.Compose([
-        transforms.ToTensor(),
-        transforms.Normalize((0.1307,), (0.3081,))
-    ])
+    tf = transforms.Compose(
+        [transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))]
+    )
 
     train_loader = torch.utils.data.DataLoader(
         datasets.MNIST("../data/raw", download=True, train=True, transform=tf),
-        batch_size=64, shuffle=True
+        batch_size=64,
+        shuffle=True,
     )
-    
+
     test_loader = torch.utils.data.DataLoader(
         datasets.MNIST("../data/raw", download=True, train=False, transform=tf),
-        batch_size=64, shuffle=True
+        batch_size=64,
+        shuffle=True,
     )
 
     # Paramètres du modèle
@@ -145,25 +150,26 @@ def main():
     convnet = ConvNet(input_size, n_kernels, output_size)
     convnet.to(device)
     print(f"Parameters={sum(p.numel() for p in convnet.parameters())/1e3}K")
-    
+
     # Entraînement
     train_model(convnet, train_loader, device, perm)
-    
+
     # Test
     test_model(convnet, test_loader, device, perm)
 
     # Sauvegarde du modèle avec la permutation
     os.makedirs("../models", exist_ok=True)
-    
+
     # Sauvegarder le modèle et la permutation utilisée
     model_data = {
-        'model_state_dict': convnet.state_dict(),
-        'permutation': perm,
-        'n_kernels': n_kernels,
-        'input_size': input_size,
-        'output_size': output_size
+        "model_state_dict": convnet.state_dict(),
+        "permutation": perm,
+        "n_kernels": n_kernels,
+        "input_size": input_size,
+        "output_size": output_size,
     }
     torch.save(model_data, "../models/convnet.pt")
+
 
 if __name__ == "__main__":
     main()
