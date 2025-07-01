@@ -1,0 +1,42 @@
+# Fichier de configuration pour Cloud Build : Analyse de la qualité du code
+
+steps:
+# Étape 1 : Installer les dépendances Python
+# Utilise l'image Python officielle pour installer les dépendances du projet
+# ainsi que les outils d'analyse.
+- name: 'python:3.11-slim'
+  id: 'Install Dependencies'
+  entrypoint: 'pip'
+  args: ['install', '-r', 'requirements.txt', 'flake8', 'bandit', 'black']
+
+# Étape 2 : Vérifier le formatage du code avec Black
+# Cette étape s'assure que le code respecte les standards de formatage.
+# Elle est non-bloquante (allowed_failure: true) pour ne pas arrêter le build
+# mais notifier d'un problème de style.
+- name: 'python:3.11-slim'
+  id: 'Check Formatting'
+  entrypoint: 'black'
+  args: ['--check', '--diff', '--color', 'src/', 'tests/']
+  waitFor: ['Install Dependencies']
+  allow_failure: true
+
+# Étape 3 : Linter le code avec Flake8
+# Cette étape vérifie la conformité avec le style guide PEP8 et détecte
+# les erreurs de programmation courantes.
+- name: 'python:3.11-slim'
+  id: 'Linting (Flake8)'
+  entrypoint: 'flake8'
+  args: ['src/', 'tests/', '--max-line-length=88', '--extend-ignore=E203,W503']
+  waitFor: ['Install Dependencies']
+
+# Étape 4 : Scan de sécurité avec Bandit
+# Bandit analyse le code pour trouver des vulnérabilités de sécurité communes.
+- name: 'python:3.11-slim'
+  id: 'Security Scan (Bandit)'
+  entrypoint: 'bandit'
+  args: ['-r', 'src/', '-f', 'custom', '--configfile', '.bandit.yml']
+  waitFor: ['Install Dependencies']
+
+options:
+  # Utiliser le logging standard de Cloud Build
+  logging: CLOUD_LOGGING_ONLY 
