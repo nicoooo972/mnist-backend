@@ -14,18 +14,19 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copier les requirements
+# Copier uniquement le fichier de requirements en premier pour optimiser le cache Docker
 COPY requirements.txt .
 
 # Installer les dépendances
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copier le code source
+# Copier le reste du code source
 COPY src/ ./src/
+COPY models/ ./models/
 
 # Créer le dossier models et copier les modèles
-RUN mkdir -p ./models
-COPY models ./models
+# RUN mkdir -p ./models
+# COPY models ./models
 
 # Définir le PYTHONPATH pour que les imports fonctionnent
 ENV PYTHONPATH=/app/src
