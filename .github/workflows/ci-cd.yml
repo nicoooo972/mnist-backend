@@ -73,10 +73,30 @@ jobs:
       with:
         sarif_file: 'trivy-results.sarif'
 
+  fetch-production-model:
+    name: ⬇️ Fetch Production Model
+    runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.event_name == 'push'
+    steps:
+    - uses: actions/checkout@v4 # Checks out the mnist-backend repo
+
+    - name: Download model artifact from kedro-backend
+      uses: dawidd6/action-download-artifact@v6
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        repo: ${{ github.repository_owner }}/kedro-backend
+        workflow: ci.yml
+        name: trained-model-convnet # Name of the artifact from kedro-backend
+        path: models/
+    
+    - name: Verify downloaded model
+      run: ls -l models/
+
   build:
     name: 🐳 Build & Push Docker Image
     runs-on: ubuntu-latest
-    needs: [test, security]
+    needs: [fetch-production-model] # Now depends on the model being fetched
     if: github.event_name == 'push'
     permissions:
       contents: read
