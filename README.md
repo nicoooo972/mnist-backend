@@ -114,7 +114,7 @@ pytest
 
 Le workflow GitHub Actions automatise :
 
-1. **Tests** : Qualité de code (Black, Pylint, Flake8)
+1. **Tests** : Qualité de code (Pylint, Flake8)
 2. **Build** : Image Docker avec modèle
 3. **Push** : Publication sur GitHub Container Registry
 4. **Deploy** : Prêt pour déploiement via `mnist-deployment`
