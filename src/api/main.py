@@ -1,13 +1,18 @@
-from fastapi import FastAPI, File, UploadFile
+"""
+API FastAPI pour le serving du modèle de classification d'images MNIST.
+"""
+import io
+import multiprocessing
+import os
+
 import numpy as np
 import torch
+from fastapi import FastAPI, File, UploadFile
 from PIL import Image
-import io
-import os
-import multiprocessing
 
 # Import du modèle
-from ..models.convnet import ConvNet
+# pylint: disable=E0402
+from src.models.convnet import ConvNet
 
 # Désactiver le multiprocessing
 multiprocessing.set_start_method("spawn", force=True)
@@ -27,22 +32,22 @@ if os.path.exists(model_path):
     # Vérifier le format du modèle sauvegardé
     if isinstance(checkpoint, dict) and "model_state_dict" in checkpoint:
         # Nouveau format avec métadonnées
-        n_kernels = checkpoint.get("n_kernels", 6)
-        input_size = checkpoint.get("input_size", 1)
-        output_size = checkpoint.get("output_size", 10)
-        permutation = checkpoint.get("permutation", torch.randperm(784))
+        N_KERNELS = checkpoint.get("n_kernels", 6)
+        INPUT_SIZE = checkpoint.get("input_size", 1)
+        OUTPUT_SIZE = checkpoint.get("output_size", 10)
+        PERMUTATION = checkpoint.get("permutation", torch.randperm(784))
 
-        model = ConvNet(input_size, n_kernels, output_size)
+        model = ConvNet(INPUT_SIZE, N_KERNELS, OUTPUT_SIZE)
         model.load_state_dict(checkpoint["model_state_dict"])
     else:
         # Ancien format (juste les weights)
         print("Chargement d'un ancien modèle sans permutation sauvegardée")
-        n_kernels = 6
-        input_size = 1
-        output_size = 10
-        permutation = torch.randperm(784)  # Permutation aléatoire
+        N_KERNELS = 6
+        INPUT_SIZE = 1
+        OUTPUT_SIZE = 10
+        PERMUTATION = torch.randperm(784)  # Permutation aléatoire
 
-        model = ConvNet(input_size, n_kernels, output_size)
+        model = ConvNet(INPUT_SIZE, N_KERNELS, OUTPUT_SIZE)
         model.load_state_dict(checkpoint)
 else:
     raise FileNotFoundError(
@@ -56,6 +61,7 @@ model.eval()
 
 
 def preprocess_image(image_bytes: bytes) -> torch.Tensor:
+    """Prétraite les octets d'une image pour le modèle."""
     # Convertir l'image en PIL Image
     image = Image.open(io.BytesIO(image_bytes))
     # Convertir en niveaux de gris si nécessaire
@@ -75,19 +81,20 @@ def preprocess_image(image_bytes: bytes) -> torch.Tensor:
 
     # Convertir en tensor et appliquer la permutation
     image_tensor = torch.from_numpy(image_array.flatten())
-    image_permuted = image_tensor[permutation]
+    image_permuted = image_tensor[PERMUTATION]
     image_reshaped = image_permuted.view(1, 28, 28)
 
     return image_reshaped
 
 
-def predict(image_tensor: torch.Tensor, model: torch.nn.Module) -> dict:
+def predict(image_tensor: torch.Tensor, pred_model: torch.nn.Module) -> dict:
+    """Effectue une prédiction sur un tensor d'image."""
     # Ajouter la dimension batch
     image_tensor = image_tensor.unsqueeze(0).to(device)
 
     # Faire la prédiction
     with torch.no_grad():
-        output = model(image_tensor)
+        output = pred_model(image_tensor)
         probabilities = torch.nn.functional.softmax(output, dim=1)
         predicted_class = torch.argmax(output, dim=1).item()
         confidence = probabilities[0][predicted_class].item()
@@ -101,6 +108,7 @@ def predict(image_tensor: torch.Tensor, model: torch.nn.Module) -> dict:
 
 @app.get("/")
 async def root():
+    """Endpoint racine de l'API."""
     return {
         "message": "API de classification MNIST",
         "endpoints": {
@@ -113,6 +121,7 @@ async def root():
 
 @app.post("/api/v1/predict")
 async def predict_endpoint(file: UploadFile = File(...)):
+    """Endpoint pour la prédiction d'image."""
     # Lire l'image
     image_bytes = await file.read()
 
@@ -127,9 +136,11 @@ async def predict_endpoint(file: UploadFile = File(...)):
 
 @app.get("/health")
 async def health():
+    """Endpoint de health check."""
     return {"status": "healthy", "service": "mnist-backend"}
 
 
 @app.get("/api/info")
 async def info():
+    """Endpoint d'informations sur l'API."""
     return {"version": "1.0.0", "model": "ConvNet"}
