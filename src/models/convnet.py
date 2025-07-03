@@ -20,7 +20,7 @@ class ConvNet(nn.Module):
         Initialise le réseau ConvNet.
 
         Args:
-            input_size (int, optional): Taille d'entrée (gardé pour compatibilité, non utilisé)
+            input_size (int, optional): Taille d'entrée (compatibilité, non utilisé)
             n_kernels (int): Nombre de filtres dans les couches convolutionnelles
             output_size (int): Nombre de classes pour la classification
         """
