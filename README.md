@@ -1,17 +1,29 @@
-# MNIST Backend - API de Serving
+# MNIST Backend
 
-Ce projet contient une API FastAPI conçue pour servir un modèle de reconnaissance de chiffres manuscrits (MNIST).
+Ce service constitue le backend de notre architecture MLOps. Son rôle principal est de servir le modèle de classification de chiffres MNIST via une API REST.
 
-## 🎯 Rôle dans l'architecture MLOps
+## Rôle dans l'architecture MLOps
 
-Ce service constitue la brique de **Serving/Inference** de notre architecture. Il **NE GÈRE PAS** l'entraînement du modèle. Sa responsabilité unique est de :
+Le backend est un composant central qui expose les capacités de prédiction du modèle entraîné. Il est découplé du pipeline d'entraînement et de l'interface utilisateur, ce qui permet des mises à jour et des montées en charge indépendantes.
 
-1. **Charger** un artefact de modèle pré-entraîné (`convnet.pt`)
-2. **Exposer** une API REST pour la prédiction en temps réel
-3. **Préprocesser** les images uploadées
-4. **Retourner** les prédictions avec confiance
+- **Exposition du modèle** : Il charge le modèle entraîné (`convnet.pt`) et l'expose via un endpoint (par exemple, `/predict`).
+- **Inférence** : Il reçoit des données (images de chiffres), les prétraite si nécessaire, et retourne les prédictions du modèle.
+- **Déploiement continu** : Dans une architecture MLOps de niveau 2, ce service est packagé dans une image Docker et déployé automatiquement via notre pipeline CI/CD dès qu'un nouveau modèle est validé et promu.
 
-> ⚠️ **Important** : L'entraînement du modèle est géré par le projet `kedro` avec des pipelines MLOps structurés.
+## Technologies
+
+- **FastAPI** : Pour créer une API performante et simple à utiliser.
+- **PyTorch** : Pour charger et utiliser le modèle de Deep Learning.
+- **Docker** : Pour packager le service et ses dépendances dans une image portable.
+
+## Démarrage
+
+Pour lancer le service localement (généralement orchestré par `docker-compose` depuis le dossier `mnist-deployment`):
+
+```bash
+docker build -t mnist-backend .
+docker run -p 8000:8000 mnist-backend
+```
 
 ## 🏗️ Architecture
 
