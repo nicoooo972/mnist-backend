@@ -2,6 +2,7 @@
 Tests de validation de qualité des modèles ML
 Tests avancés pour valider la qualité et robustesse des modèles
 """
+
 import pytest
 import torch
 import torch.nn.functional as F
