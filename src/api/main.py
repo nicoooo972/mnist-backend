@@ -47,8 +47,8 @@ if os.path.exists(model_path):
 else:
     raise FileNotFoundError(
         f"❌ Aucun modèle entraîné trouvé à {model_path}!\n"
-        f"🚀 Lancez d'abord: python train_model.py\n"
-        f"📁 Le modèle sera sauvegardé dans models/convnet.pt"
+        f"🚀 Entraînez d'abord avec Kedro: cd ../kedro && kedro run\n"
+        f"📁 Puis copiez le modèle: cp ../kedro/data/06_models/convnet.pt models/"
     )
 
 model.to(device)
