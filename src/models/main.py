@@ -1,3 +1,10 @@
+"""
+Script principal d'entraînement du modèle ConvNet pour MNIST.
+
+Ce module contient toutes les fonctions nécessaires pour entraîner
+et tester un modèle ConvNet sur le dataset MNIST.
+"""
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
